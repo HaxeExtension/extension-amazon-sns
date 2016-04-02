@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.haxe.extension.amazonsns">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.REGISTER" />
+    <uses-permission android:name="org.haxe.extension.amazonsns.permission.C2D_MESSAGE" />
+
+    <permission
+        android:name="org.haxe.extension.amazonsns.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <permission
+        android:name="org.haxe.extension.amazonsns.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+	<application android:debuggable="::DEBUG::">
+        <service
+            android:name="org.haxe.extension.amazonsns.MessageReceivingService"
+            android:label="org.haxe.extension.amazonsns.MessageReceivingService" >
+            <intent-filter>
+                <action android:name="org.haxe.extension.amazonsns.AndroidMobilePushApp" />
+                <action android:name="org.haxe.extension.amazonsns.ExternalReceiver" />
+                <category android:name="org.haxe.extension.amazonsns" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name="org.haxe.extension.amazonsns.ExternalReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <action android:name="com.google.android.c2dm.intent.REGISTER" />
+
+                <category android:name="org.haxe.extension.amazonsns" />
+            </intent-filter>
+        </receiver>
+	</application>
+</manifest>

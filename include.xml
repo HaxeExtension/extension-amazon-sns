@@ -3,7 +3,8 @@
 	<section if="android">
 		<haxelib name="extension-android-support-v4" /> 
 		<haxelib name="extension-googleplayservices-lib" /> 
-		<dependency name="admobex" path="dependencies/amazonsnsex" /> 
+		<dependency name="amazonsns" path="dependencies/amazonsns" /> 
+		<android extension="org.haxe.extension.amazonsns.AmazonSNS" />
 	</section>
 	<!--section if="ios">
 		<ndll name="admobex" />
