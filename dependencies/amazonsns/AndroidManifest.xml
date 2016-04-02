@@ -20,7 +20,7 @@
             android:name="org.haxe.extension.amazonsns.MessageReceivingService"
             android:label="org.haxe.extension.amazonsns.MessageReceivingService" >
             <intent-filter>
-                <action android:name="org.haxe.extension.amazonsns.AndroidMobilePushApp" />
+                <action android:name="org.haxe.extension.amazonsns.AmazonSNS" />
                 <action android:name="org.haxe.extension.amazonsns.ExternalReceiver" />
                 <category android:name="org.haxe.extension.amazonsns" />
             </intent-filter>

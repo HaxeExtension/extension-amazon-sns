@@ -30,7 +30,7 @@ public class MessageReceivingService extends Service{
 
     public static void sendToApp(Bundle extras, Context context){
         Intent newIntent = new Intent();
-        newIntent.setClass(context, AmazonSNS.class);
+        newIntent.setClass(context, AmazonSNS.mainActivity.getClass());
         newIntent.putExtras(extras);
         newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(newIntent);
@@ -69,7 +69,7 @@ public class MessageReceivingService extends Service{
         editor.putInt(context.getString(R.string.lines_of_message_count), linesOfMessageCount);
         editor.putInt(numOfMissedMessages, savedValues.getInt(numOfMissedMessages, 0) + 1);
         editor.commit();
-        postNotification(new Intent(context, AmazonSNS.class), context);
+        postNotification(new Intent(context, AmazonSNS.mainActivity.getClass()), context);
     }
 
     protected static void postNotification(Intent intentAction, Context context){
