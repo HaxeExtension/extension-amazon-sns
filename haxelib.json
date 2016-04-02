@@ -1,0 +1,14 @@
+{
+	"name": "extension-amazon-sns",
+	"url": "https://github.com/sempaigames/extension-amazon-sns",
+	"license": "MIT",
+	"contributors":["fbricker"],
+	"tags": ["amazon","sns","push","notifications","openfl","nme","gcm"],
+	"description": "OpenFL/NME extension for Amazon SNS (push notifications service).",
+	"dependencies": {
+		"extension-android-support-v4": "",
+		"extension-googleplayservices-lib": ""
+	},
+	"version": "0.0.1",
+	"releasenote": "First Alpha Release."
+}
