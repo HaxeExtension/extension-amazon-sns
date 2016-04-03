@@ -28,11 +28,11 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 public class MessageReceivingService extends Service{
     private GoogleCloudMessaging gcm;
     public static SharedPreferences savedValues;
+    private static String packageName = null;
 
     private static Intent createIntent(){
         Intent intent = new Intent();
-        String package = getString(R.string.app_package);
-        intent.setComponent(new ComponentName(package,package+".MainActivity"));
+        intent.setComponent(new ComponentName(packageName,packageName+".MainActivity"));
         return intent;
     }
 
@@ -50,6 +50,8 @@ public class MessageReceivingService extends Service{
     public void onCreate(){
         super.onCreate();
         final String preferences = getString(R.string.preferences);
+        packageName = getString(R.string.app_package);
+
         savedValues = getSharedPreferences(preferences, Context.MODE_PRIVATE);
         // In later versions multi_process is no longer the default
         if(VERSION.SDK_INT >  9){
