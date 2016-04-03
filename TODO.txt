@@ -1,0 +1,2 @@
+* Poner ícono personalizado
+* Personalizar mensajes en barra de notificaciones

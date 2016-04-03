@@ -96,8 +96,8 @@ public class MessageReceivingService extends Service{
 
         final PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intentAction, Notification.DEFAULT_LIGHTS | Notification.FLAG_AUTO_CANCEL);
         final Notification notification = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle("Message Received!")
-                .setContentText("")
+                .setContentTitle(context.getString(R.string.app_title))
+                .setContentText("notification arrived...")
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .getNotification();

@@ -7,4 +7,5 @@
     <string name="preferences">PreferencesFile</string>
     <string name="notification_number">1337</string>
     <string name="app_package">::APP_PACKAGE::</string>
+    <string name="app_title">::APP_TITLE::</string>
 </resources>
