@@ -13,31 +13,38 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import org.haxe.extension.Extension;
+import org.haxe.lime.HaxeObject;
 
 public class AmazonSNS extends Extension {
     private SharedPreferences savedValues;
-    private String numOfMissedMessages;
+    private static String numOfMissedMessages;
 
     // Since this activity is SingleTop, there can only ever be one instance. This variable corresponds to this instance.
     public static Boolean inBackground = true;
+    public static String senderID = null;
+    private static HaxeObject callback = null;
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        numOfMissedMessages = mainActivity.getString(R.string.num_of_missed_messages);
-        //setContentView(R.layout.activity_main);
-        //tView = (TextView) findViewById(R.id.tViewId);
-        //tView.setMovementMethod(new ScrollingMovementMethod());
-        mainActivity.startService(new Intent(mainActivity, MessageReceivingService.class));
+    public static void init(String senderID, HaxeObject callback) {
+    	if (AmazonSNS.senderID != null) return;
+    	AmazonSNS.senderID = senderID;
+    	AmazonSNS.callback = callback;
+
+		mainActivity.runOnUiThread(new Runnable() {
+			public void run() {    	
+				numOfMissedMessages = mainActivity.getString(R.string.num_of_missed_messages);
+				mainActivity.startService(new Intent(mainActivity, MessageReceivingService.class));
+    		}
+    	});
+    }
+
+    public static void onMessage(String s){
+    	if(callback==null) return;
+    	callback.call1("onMessage",s);
     }
 
     public void onStop(){
         super.onStop();
         inBackground = true;
-    }
-
-    public void onRestart(){
-        super.onRestart();
-        //tView.setText("");;
     }
 
     public void onResume(){
@@ -50,6 +57,7 @@ public class AmazonSNS extends Extension {
         }
         String newMessage = getMessage(numOfMissedMessages);
         if(newMessage!=""){
+            onMessage(newMessage);
             Log.i("displaying message", newMessage);
             //tView.append(newMessage);
         }
@@ -67,7 +75,6 @@ public class AmazonSNS extends Extension {
         if(numOfMissedMessages > 0){
             String plural = numOfMissedMessages > 1 ? "s" : "";
             Log.i("onResume","missed " + numOfMissedMessages + " message" + plural);
-            //tView.append("You missed " + numOfMissedMessages +" message" + plural + ". Your most recent was:\n");
             for(int i = 0; i < savedValues.getInt(linesOfMessageCount, 0); i++){
                 String line = savedValues.getString("MessageLine"+i, "");
                 message+= (line + "\n");
@@ -78,8 +85,7 @@ public class AmazonSNS extends Extension {
             editor.putInt(this.numOfMissedMessages, 0);
             editor.putInt(linesOfMessageCount, 0);
             editor.commit();
-        }
-        else{
+        } else {
             Log.i("onResume","no missed messages");
             Intent intent = mainActivity.getIntent();
             Log.i("onResume","no missed messages!!!!");

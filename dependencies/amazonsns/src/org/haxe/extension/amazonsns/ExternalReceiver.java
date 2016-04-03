@@ -12,8 +12,7 @@ public class ExternalReceiver extends BroadcastReceiver {
             Bundle extras = intent.getExtras();
             if(!AmazonSNS.inBackground){
                 MessageReceivingService.sendToApp(extras, context);
-            }
-            else{
+            } else {
                 MessageReceivingService.saveToLog(extras, context);
             }
         }

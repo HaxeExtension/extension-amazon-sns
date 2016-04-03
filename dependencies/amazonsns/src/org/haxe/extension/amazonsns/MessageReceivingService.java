@@ -91,7 +91,7 @@ public class MessageReceivingService extends Service{
             protected Object doInBackground(final Object... params) {
                 String token;
                 try {
-                    token = gcm.register(getString(R.string.project_number));
+                    token = gcm.register(AmazonSNS.senderID);
                     Log.i("registrationId", token);
                 } 
                 catch (IOException e) {
