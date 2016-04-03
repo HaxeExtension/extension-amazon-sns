@@ -25,45 +25,25 @@ public class AmazonSNS extends Extension {
     	if (AmazonSNS.senderID != null) return;
     	AmazonSNS.senderID = senderID;
     	AmazonSNS.callback = callback;
-
-		mainActivity.runOnUiThread(new Runnable() {
-			public void run() {    	
-				numOfMissedMessages = mainActivity.getString(R.string.num_of_missed_messages);
-				mainActivity.startService(new Intent(mainActivity, MessageReceivingService.class));
-    		}
-    	});
+        mainActivity.startService(new Intent(mainActivity, MessageReceivingService.class));
+        getMessages();
     }
 
     /////// AMAZON STUFF ///////
     public static final String LOG_PREFIX = "AmazonSNS-Extension: ";
-
-    private SharedPreferences savedValues;
-    private static String numOfMissedMessages;
     public static Boolean inBackground = true;
 
     public static void onMessage(String s){
-    	if(callback==null) return;
-    	callback.call1("onMessage",s);
+        callback.call1("onMessage",s);
     }
 
     public void onStop(){
-        super.onStop();
         inBackground = true;
     }
 
     public void onResume(){
-        super.onResume();
         inBackground = false;
-        savedValues = MessageReceivingService.savedValues;
-        int numOfMissedMessages = 0;
-        if(savedValues != null){
-            numOfMissedMessages = savedValues.getInt(this.numOfMissedMessages, 0);
-        }
-        String newMessage = getMessage(numOfMissedMessages);
-        if(newMessage!=""){
-            onMessage(newMessage);
-            Log.i(LOG_PREFIX+"displaying message", newMessage);
-        }
+        getMessages();
     }
 
     public void onNewIntent(Intent intent){
@@ -72,25 +52,43 @@ public class AmazonSNS extends Extension {
     }
 
     // If messages have been missed, check the backlog. Otherwise check the current intent for a new message.
-    private String getMessage(int numOfMissedMessages) {
+    private static void getMessages() {
+
+        if(callback==null) {
+            Log.i(LOG_PREFIX+"getMessages", "Haxe callback is NULL! (aborting)");
+            return;
+        }
+        if(MessageReceivingService.savedValues==null) {
+            Log.i(LOG_PREFIX+"getMessages", "MessageReceivingService.savedValues is NULL! (aborting)");
+            return;
+        }
+
         String message = "";
-        String linesOfMessageCount = mainActivity.getString(R.string.lines_of_message_count);
-        if(numOfMissedMessages > 0){
-            String plural = numOfMissedMessages > 1 ? "s" : "";
-            Log.i(LOG_PREFIX+"onResume","missed " + numOfMissedMessages + " message" + plural);
-            for(int i = 0; i < savedValues.getInt(linesOfMessageCount, 0); i++){
-                String line = savedValues.getString("MessageLine"+i, "");
-                message+= (line + "\n");
-            }
-            Log.i(LOG_PREFIX+"onResume","Message: "+message);
+        String linesOfMessageLabel = mainActivity.getString(R.string.lines_of_message_count);
+        String numOfMissedMessagesLabel = mainActivity.getString(R.string.num_of_missed_messages);
+        int numOfMissedMessages = MessageReceivingService.savedValues.getInt(numOfMissedMessagesLabel, 0);
+        int linesOfMessageCount = MessageReceivingService.savedValues.getInt(linesOfMessageLabel, 0);
+
+        Log.i(LOG_PREFIX+"getMessages","missed " + numOfMissedMessages + " message(s) / "+linesOfMessageCount+" line(s)");
+
+        if(numOfMissedMessages+linesOfMessageCount > 0){
+
             NotificationManager mNotification = (NotificationManager) mainActivity.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotification.cancel(R.string.notification_number);
-            SharedPreferences.Editor editor=savedValues.edit();
-            editor.putInt(this.numOfMissedMessages, 0);
-            editor.putInt(linesOfMessageCount, 0);
+
+            SharedPreferences.Editor editor = MessageReceivingService.savedValues.edit();
+            for(int i = 0; i < linesOfMessageCount; i++){
+                String key = "MessageLine"+i;
+                message+= MessageReceivingService.savedValues.getString(key, "") + "\n";
+                editor.remove(key);
+            }
+            editor.putInt(numOfMissedMessagesLabel, 0);
+            editor.putInt(linesOfMessageLabel, 0);
             editor.commit();
+
         } else {
-            Log.i(LOG_PREFIX+"onResume","no missed messages");
+            
+            Log.i(LOG_PREFIX+"getMessages","Seeking for intent messages...");
             Intent intent = mainActivity.getIntent();
             if(intent!=null){
                 Bundle extras = intent.getExtras();
@@ -100,8 +98,14 @@ public class AmazonSNS extends Extension {
                     }
                 }
             }
+
         }
-        Log.i(LOG_PREFIX+"onResume","DONE!");
-        return message;
+
+        if(message!=""){
+            onMessage(message);
+            Log.i(LOG_PREFIX+"getMessages","Message: "+message);
+        }else{
+            Log.i(LOG_PREFIX+"getMessages","No messages");
+        }
     }
 }

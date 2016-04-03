@@ -47,16 +47,16 @@ public class MessageReceivingService extends Service{
         context.startActivity(intent);
     }
 
+    public static void loadSavedValues(Context context){
+    }
+
     public void onCreate(){
         super.onCreate();
-        final String preferences = getString(R.string.preferences);
-        packageName = getString(R.string.app_package);
+        Log.i(AmazonSNS.LOG_PREFIX+"MessageReceivingService.onCreate", "Begins...");
+        packageName = getString(R.string.app_package);        
+        final String preferencesLabel = getString(R.string.preferences);
+        savedValues = getBaseContext().getSharedPreferences(preferencesLabel, Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
 
-        savedValues = getSharedPreferences(preferences, Context.MODE_PRIVATE);
-        // In later versions multi_process is no longer the default
-        if(VERSION.SDK_INT >  9){
-            savedValues = getSharedPreferences(preferences, Context.MODE_MULTI_PROCESS);
-        }
         gcm = GoogleCloudMessaging.getInstance(getBaseContext());
         SharedPreferences savedValues = PreferenceManager.getDefaultSharedPreferences(this);
         if(savedValues.getBoolean(getString(R.string.first_launch), true)){
@@ -70,20 +70,24 @@ public class MessageReceivingService extends Service{
     }
 
     protected static void saveToLog(Bundle extras, Context context){
-        SharedPreferences.Editor editor=savedValues.edit();
-        String numOfMissedMessages = context.getString(R.string.num_of_missed_messages);
-        int linesOfMessageCount = 0;
+        String numOfMissedMessagesLabel = context.getString(R.string.num_of_missed_messages);
+        String linesOfMessageLabel = context.getString(R.string.lines_of_message_count);
+        int numOfMissedMessages = savedValues.getInt(numOfMissedMessagesLabel, 0) + 1;
+        int linesOfMessageCount = savedValues.getInt(linesOfMessageLabel, 0);
+        Log.i(AmazonSNS.LOG_PREFIX, "Saving missed message number " + numOfMissedMessages);
+
+        SharedPreferences.Editor editor = savedValues.edit();
         for(String key : extras.keySet()){
             String line = String.format("%s=%s", key, extras.getString(key));
             editor.putString("MessageLine" + linesOfMessageCount, line);
+            Log.i(AmazonSNS.LOG_PREFIX, "Saving String: " + "MessageLine" + linesOfMessageCount + " = " + line);
             linesOfMessageCount++;
         }
-        editor.putInt(context.getString(R.string.lines_of_message_count), linesOfMessageCount);
-        editor.putInt(context.getString(R.string.lines_of_message_count), linesOfMessageCount);
-        editor.putInt(numOfMissedMessages, savedValues.getInt(numOfMissedMessages, 0) + 1);
+
+        editor.putInt(linesOfMessageLabel, linesOfMessageCount);
+        editor.putInt(numOfMissedMessagesLabel, numOfMissedMessages);
         editor.commit();
         Intent intent = createIntent();
-        //intent.setContext(context);
         postNotification(intent, context);
     }
 
