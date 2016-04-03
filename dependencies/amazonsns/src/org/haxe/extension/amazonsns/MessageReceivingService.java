@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.content.ComponentName;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
@@ -28,12 +29,22 @@ public class MessageReceivingService extends Service{
     private GoogleCloudMessaging gcm;
     public static SharedPreferences savedValues;
 
+    private static Intent createIntent(){
+        Intent intent = new Intent();
+        String package = getString(R.string.app_package);
+        intent.setComponent(new ComponentName(package,package+".MainActivity"));
+        return intent;
+    }
+
     public static void sendToApp(Bundle extras, Context context){
-        Intent newIntent = new Intent();
-        newIntent.setClass(context, AmazonSNS.mainActivity.getClass());
-        newIntent.putExtras(extras);
-        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(newIntent);
+        if(AmazonSNS.mainActivity == null) {
+            Log.i("MessageReceivingService.sendToApp", "I won't do anything since mainActivity is not alive anymore.");
+            return;
+        }
+        Intent intent = createIntent();
+        intent.putExtras(extras);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 
     public void onCreate(){
@@ -69,7 +80,9 @@ public class MessageReceivingService extends Service{
         editor.putInt(context.getString(R.string.lines_of_message_count), linesOfMessageCount);
         editor.putInt(numOfMissedMessages, savedValues.getInt(numOfMissedMessages, 0) + 1);
         editor.commit();
-        postNotification(new Intent(context, AmazonSNS.mainActivity.getClass()), context);
+        Intent intent = createIntent();
+        //intent.setContext(context);
+        postNotification(intent, context);
     }
 
     protected static void postNotification(Intent intentAction, Context context){
