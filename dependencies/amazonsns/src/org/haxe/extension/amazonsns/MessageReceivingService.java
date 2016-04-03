@@ -38,7 +38,7 @@ public class MessageReceivingService extends Service{
 
     public static void sendToApp(Bundle extras, Context context){
         if(AmazonSNS.mainActivity == null) {
-            Log.i("MessageReceivingService.sendToApp", "I won't do anything since mainActivity is not alive anymore.");
+            Log.i(AmazonSNS.LOG_PREFIX+"MessageReceivingService.sendToApp", "I won't do anything since mainActivity is not alive anymore.");
             return;
         }
         Intent intent = createIntent();
@@ -107,10 +107,10 @@ public class MessageReceivingService extends Service{
                 String token;
                 try {
                     token = gcm.register(AmazonSNS.senderID);
-                    Log.i("registrationId", token);
+                    Log.i(AmazonSNS.LOG_PREFIX, "Registration ID = " + token);
                 } 
                 catch (IOException e) {
-                    Log.i("Registration Error", e.getMessage());
+                    Log.i(AmazonSNS.LOG_PREFIX, "Registration Error: " + e.getMessage());
                 }
                 return true;
             }

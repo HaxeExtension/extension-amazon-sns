@@ -15,7 +15,6 @@ class AmazonSNS {
 
 			// JNI METHOD LINKING
 			var __init:String->AmazonSNS->Void = openfl.utils.JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "init", "(Ljava/lang/String;Lorg/haxe/lime/HaxeObject;)V");
-			trace("LINKEADO");
 			__init(senderID, instance);
 		}catch(e:Dynamic){
 			trace("Android INIT Exception: "+e);

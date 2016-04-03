@@ -16,11 +16,8 @@ import org.haxe.extension.Extension;
 import org.haxe.lime.HaxeObject;
 
 public class AmazonSNS extends Extension {
-    private SharedPreferences savedValues;
-    private static String numOfMissedMessages;
 
-    // Since this activity is SingleTop, there can only ever be one instance. This variable corresponds to this instance.
-    public static Boolean inBackground = true;
+    /////// HAXE STUFF ///////
     public static String senderID = null;
     private static HaxeObject callback = null;
 
@@ -36,6 +33,13 @@ public class AmazonSNS extends Extension {
     		}
     	});
     }
+
+    /////// AMAZON STUFF ///////
+    public static final String LOG_PREFIX = "AmazonSNS-Extension: ";
+
+    private SharedPreferences savedValues;
+    private static String numOfMissedMessages;
+    public static Boolean inBackground = true;
 
     public static void onMessage(String s){
     	if(callback==null) return;
@@ -58,8 +62,7 @@ public class AmazonSNS extends Extension {
         String newMessage = getMessage(numOfMissedMessages);
         if(newMessage!=""){
             onMessage(newMessage);
-            Log.i("displaying message", newMessage);
-            //tView.append(newMessage);
+            Log.i(LOG_PREFIX+"displaying message", newMessage);
         }
     }
 
@@ -74,11 +77,12 @@ public class AmazonSNS extends Extension {
         String linesOfMessageCount = mainActivity.getString(R.string.lines_of_message_count);
         if(numOfMissedMessages > 0){
             String plural = numOfMissedMessages > 1 ? "s" : "";
-            Log.i("onResume","missed " + numOfMissedMessages + " message" + plural);
+            Log.i(LOG_PREFIX+"onResume","missed " + numOfMissedMessages + " message" + plural);
             for(int i = 0; i < savedValues.getInt(linesOfMessageCount, 0); i++){
                 String line = savedValues.getString("MessageLine"+i, "");
                 message+= (line + "\n");
             }
+            Log.i(LOG_PREFIX+"onResume","Message: "+message);
             NotificationManager mNotification = (NotificationManager) mainActivity.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotification.cancel(R.string.notification_number);
             SharedPreferences.Editor editor=savedValues.edit();
@@ -86,9 +90,8 @@ public class AmazonSNS extends Extension {
             editor.putInt(linesOfMessageCount, 0);
             editor.commit();
         } else {
-            Log.i("onResume","no missed messages");
+            Log.i(LOG_PREFIX+"onResume","no missed messages");
             Intent intent = mainActivity.getIntent();
-            Log.i("onResume","no missed messages!!!!");
             if(intent!=null){
                 Bundle extras = intent.getExtras();
                 if(extras!=null){
@@ -98,8 +101,7 @@ public class AmazonSNS extends Extension {
                 }
             }
         }
-            Log.i("onResume","DONE!");
-        message+="\n";
+        Log.i(LOG_PREFIX+"onResume","DONE!");
         return message;
     }
 }
