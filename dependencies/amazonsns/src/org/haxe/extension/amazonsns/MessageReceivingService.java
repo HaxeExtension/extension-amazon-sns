@@ -29,6 +29,8 @@ public class MessageReceivingService extends Service{
     private GoogleCloudMessaging gcm;
     public static SharedPreferences savedValues;
     private static String packageName = null;
+    private static int notificationIconID = 0;
+    private static int multiNotificationIconID = 0;
 
     private static Intent createIntent(){
         Intent intent = new Intent();
@@ -88,14 +90,25 @@ public class MessageReceivingService extends Service{
         editor.putInt(numOfMissedMessagesLabel, numOfMissedMessages);
         editor.commit();
         Intent intent = createIntent();
-        postNotification(intent, context);
+        postNotification(intent, context, numOfMissedMessages);
     }
 
-    protected static void postNotification(Intent intentAction, Context context){
-        final NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    private static void loadNotificationIcons(Context context){
+        if(notificationIconID != 0) return;
+ 
+        notificationIconID = context.getResources().getIdentifier("notification-icon", "drawable", packageName);
+        multiNotificationIconID = context.getResources().getIdentifier("multi-notification-icon", "drawable", packageName);
 
+        if(notificationIconID == 0) notificationIconID = context.getResources().getIdentifier("icon", "drawable", packageName);
+        if(multiNotificationIconID == 0) multiNotificationIconID = notificationIconID;        
+    }
+
+    protected static void postNotification(Intent intentAction, Context context, int numOfMissedMessages) {
+        loadNotificationIcons(context);
+        final NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         final PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intentAction, Notification.DEFAULT_LIGHTS | Notification.FLAG_AUTO_CANCEL);
-        final Notification notification = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_launcher)
+        final Notification notification = new NotificationCompat.Builder(context)
+                .setSmallIcon(numOfMissedMessages>1?multiNotificationIconID:notificationIconID)
                 .setContentTitle(context.getString(R.string.app_title))
                 .setContentText("notification arrived...")
                 .setContentIntent(pendingIntent)
