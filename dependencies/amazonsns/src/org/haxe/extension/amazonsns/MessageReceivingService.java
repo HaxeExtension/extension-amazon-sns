@@ -117,6 +117,7 @@ public class MessageReceivingService extends Service{
                 .setContentText(message)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL)
                 .getNotification();
 
         mNotificationManager.notify(R.string.notification_number, notification);
