@@ -1,4 +1,1 @@
-* Personalizar mensajes en barra de notificaciones
-* Documentar un poco
 * Agregar callback para recibir notificaciones
-* Crear texto para múltiples notificaciones

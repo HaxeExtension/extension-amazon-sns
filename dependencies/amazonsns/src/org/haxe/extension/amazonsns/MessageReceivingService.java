@@ -49,9 +49,6 @@ public class MessageReceivingService extends Service{
         context.startActivity(intent);
     }
 
-    public static void loadSavedValues(Context context){
-    }
-
     public void onCreate(){
         super.onCreate();
         Log.i(AmazonSNS.LOG_PREFIX+"MessageReceivingService.onCreate", "Begins...");
@@ -105,12 +102,19 @@ public class MessageReceivingService extends Service{
 
     protected static void postNotification(Intent intentAction, Context context, int numOfMissedMessages) {
         loadNotificationIcons(context);
+
+        String messageKey = context.getString(numOfMissedMessages>1?R.string.multiple_notifications_msg:R.string.single_notification_msg);
+        String titleKey = context.getString(numOfMissedMessages>1?R.string.multiple_notifications_title:R.string.single_notification_title);
+
+        final String message = savedValues.getString(messageKey,messageKey).replace("%%",""+numOfMissedMessages);
+        final String title = savedValues.getString(titleKey,context.getString(R.string.app_title)).replace("%%",""+numOfMissedMessages);
+
         final NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         final PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intentAction, Notification.DEFAULT_LIGHTS | Notification.FLAG_AUTO_CANCEL);
         final Notification notification = new NotificationCompat.Builder(context)
                 .setSmallIcon(numOfMissedMessages>1?multiNotificationIconID:notificationIconID)
-                .setContentTitle(context.getString(R.string.app_title))
-                .setContentText("notification arrived...")
+                .setContentTitle(title)
+                .setContentText(message)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .getNotification();
