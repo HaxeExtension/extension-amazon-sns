@@ -26,7 +26,7 @@ public class AmazonSNS extends Extension {
     private static String multipleNotificationTitle = null;
     private static String singleNotificationMessage = null;
     private static String multipleNotificationMessage = null;
-    private static boolean notifiedRegistrationSuccess = false;
+    public static boolean notifiedRegistrationSutatus = false;
 
     public static void init(String senderID, HaxeObject callback) {
     	if (AmazonSNS.senderID != null) return;
@@ -70,6 +70,10 @@ public class AmazonSNS extends Extension {
         return true;
     }
 
+    public static void registerRetry(){
+        MessageReceivingService.register();
+    }
+
     public static String getRegistrationId() {
         if(MessageReceivingService.savedValues == null) return null;
         return MessageReceivingService.savedValues.getString(mainContext.getString(R.string.registration_id),"");
@@ -81,21 +85,22 @@ public class AmazonSNS extends Extension {
     }
 
     private static void notifyRegistrationStatus(final String registration_id){
-        if(notifiedRegistrationSuccess==true) return;
+        if(notifiedRegistrationSutatus==true) return;
         if(callback==null) return;
         if(MessageReceivingService.savedValues == null) return;
 
         mainActivity.runOnUiThread(new Runnable() {
             public void run() {
                 String token = registration_id;
-                if(token == null || token.equals("")) token = MessageReceivingService.savedValues.getString(mainContext.getString(R.string.registration_id),null);
-                if(token!=null) {
-                    notifiedRegistrationSuccess = true;
+                if(token == null || token.equals("")) token = MessageReceivingService.savedValues.getString(mainContext.getString(R.string.registration_id),"");
+                if(!token.equals("")) {
+                    notifiedRegistrationSutatus = true;
                     callback.call1("_onRegistrationSuccess",token);
                     return;
                 }
-                String error = MessageReceivingService.savedValues.getString(mainContext.getString(R.string.registration_error),null);
-                if(error !=null) {
+                String error = MessageReceivingService.savedValues.getString(mainContext.getString(R.string.registration_error),"");
+                if(!error.equals("")) {
+                    notifiedRegistrationSutatus = true;
                     callback.call1("_onRegistrationError",error);
                 }
             }

@@ -32,7 +32,7 @@ class Main extends Sprite {
 		trace("Setting callback functions");
 		AmazonSNS.onNotificationsReceived = onNotificationsReceived;
 		AmazonSNS.onRegistrationSuccess = onRegistrationSuccess;
-		// AmazonSNS.onRegistrationError = onRegistrationErrror; // (optional)
+		AmazonSNS.onRegistrationError = onRegistrationError; // (optional)
 		AmazonSNS.onLoadComplete = onLoadComplete;
 
 		trace("About to init AmazonSNS for Google Cloud Messages");
@@ -50,6 +50,11 @@ class Main extends Sprite {
 		trace("Registration success: "+registrationID);
 		// you can also call AmazonSNS.getRegistrationId(); to get registrationID at any time.
 		// you can also call AmazonSNS.getRegistrationError(); to get registrationErrors at any time.
+	}
+
+	public function onRegistrationError(error:String){
+		trace("Registration error: "+error+" will retry in 5 seconds.");
+		haxe.Timer.delay(AmazonSNS.registerRetry,5000);
 	}
 	
 }

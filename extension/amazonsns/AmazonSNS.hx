@@ -10,10 +10,11 @@ class AmazonSNS {
 	public static var onRegistrationSuccess:String->Void = null;
 	public static var onRegistrationError:String->Void = null;
 
-	public static var setNotificationTitle(default,null):String->String->Bool = null;
-	public static var setNotificationMessage(default,null):String->String->Bool = null;
-	public static var getRegistrationId(default,null):Void->String = null;
-	public static var getRegistrationError(default,null):Void->String = null;
+	public static var setNotificationTitle(default,null):String->String->Bool = function(single:String,multiple:String) return true;
+	public static var setNotificationMessage(default,null):String->String->Bool = function(single:String,multiple:String) return true;
+	public static var getRegistrationId(default,null):Void->String = function() return "";
+	public static var getRegistrationError(default,null):Void->String = function() return "";
+	public static var registerRetry(default,null):Void->Void = function() return;
 
 	public static function initGCM(senderID:String){
 		#if android
@@ -27,6 +28,7 @@ class AmazonSNS {
 			setNotificationMessage = openfl.utils.JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "setNotificationMessages", "(Ljava/lang/String;Ljava/lang/String;)Z");
 			getRegistrationId = openfl.utils.JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "getRegistrationId", "()Ljava/lang/String;");
 			getRegistrationError = openfl.utils.JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "getRegistrationError", "()Ljava/lang/String;");
+			registerRetry = openfl.utils.JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "registerRetry", "()V");
 			__init(senderID, instance);
 		}catch(e:Dynamic){
 			trace("Android INIT Exception: "+e);

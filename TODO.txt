@@ -1,2 +1,1 @@
-* Probar registarse con modo avion
 * Ver error de profile=null

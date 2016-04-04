@@ -26,7 +26,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
  * and a notification is posted to the NotificationManager.
  */
 public class MessageReceivingService extends Service{
-    private GoogleCloudMessaging gcm;
+    private static GoogleCloudMessaging gcm;
     public static SharedPreferences savedValues;
     private static String packageName = null;
     private static int notificationIconID = 0;
@@ -116,7 +116,9 @@ public class MessageReceivingService extends Service{
         mNotificationManager.notify(R.string.notification_number, notification);
     }
 
-    private void register() {
+    public static void register() {
+        if(AmazonSNS.mainContext == null) return;
+        AmazonSNS.notifiedRegistrationSutatus = false;
         new AsyncTask(){
             protected Object doInBackground(final Object... params) {
                 String token;
@@ -124,13 +126,13 @@ public class MessageReceivingService extends Service{
                 try {
                     token = gcm.register(AmazonSNS.senderID);
                     Log.i(AmazonSNS.LOG_PREFIX, "Registration ID: " + token);
-                    editor.putString(getString(R.string.registration_id), token);
-                    editor.remove(getString(R.string.registration_error));
+                    editor.putString(AmazonSNS.mainContext.getString(R.string.registration_id), token);
+                    editor.remove(AmazonSNS.mainContext.getString(R.string.registration_error));
                 } 
                 catch (IOException e) {
                     Log.i(AmazonSNS.LOG_PREFIX, "Registration Error: " + e.getMessage());
-                    editor.putString(getString(R.string.registration_error), e.getMessage());
-                    editor.remove(getString(R.string.registration_id));
+                    editor.putString(AmazonSNS.mainContext.getString(R.string.registration_error), e.getMessage());
+                    editor.remove(AmazonSNS.mainContext.getString(R.string.registration_id));
                 }
                 editor.commit();
                 return true;
