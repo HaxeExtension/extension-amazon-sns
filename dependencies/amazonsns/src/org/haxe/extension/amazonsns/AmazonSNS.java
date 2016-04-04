@@ -21,6 +21,11 @@ public class AmazonSNS extends Extension {
     public static String senderID = null;
     private static HaxeObject callback = null;
 
+    private static String singleNotificationTitle = null;
+    private static String multipleNotificationTitle = null;
+    private static String singleNotificationMessage = null;
+    private static String multipleNotificationMessage = null;
+
     public static void init(String senderID, HaxeObject callback) {
     	if (AmazonSNS.senderID != null) return;
     	AmazonSNS.senderID = senderID;
@@ -29,13 +34,52 @@ public class AmazonSNS extends Extension {
         getMessages();
     }
 
+    public static boolean setNotificationTitles(String single, String multiple) {
+        if(single == null || multiple == null) return false;
+        singleNotificationTitle = null;
+        multipleNotificationTitle = null;
+
+        if(MessageReceivingService.savedValues == null){
+            singleNotificationTitle = single;
+            multipleNotificationTitle = multiple;
+            return true;
+        }
+        SharedPreferences.Editor editor = MessageReceivingService.savedValues.edit();
+        editor.putString(mainContext.getString(R.string.single_notification_title),single);
+        editor.putString(mainContext.getString(R.string.multiple_notifications_title),multiple);
+        editor.commit();
+        return true;
+    }
+
+    public static boolean setNotificationMessages(String single, String multiple) {
+        if(single == null || multiple == null) return false;
+        singleNotificationMessage = null;
+        multipleNotificationMessage = null;
+
+        if(MessageReceivingService.savedValues == null){
+            singleNotificationMessage = single;
+            multipleNotificationMessage = multiple;
+            return false;
+        }
+        SharedPreferences.Editor editor = MessageReceivingService.savedValues.edit();
+        editor.putString(mainContext.getString(R.string.single_notification_msg),single);
+        editor.putString(mainContext.getString(R.string.multiple_notifications_msg),multiple);
+        editor.commit();
+        return true;
+    }
+
+    private static void onMessage(String s){
+        callback.call1("_onMessage",s);
+    }
+
+    private static void submitNotificationTexts(){
+        setNotificationTitles(singleNotificationTitle, multipleNotificationTitle);
+        setNotificationMessages(singleNotificationMessage, multipleNotificationMessage);
+    }
+
     /////// AMAZON STUFF ///////
     public static final String LOG_PREFIX = "AmazonSNS-Extension: ";
     public static Boolean inBackground = true;
-
-    public static void onMessage(String s){
-        callback.call1("onMessage",s);
-    }
 
     public void onStop(){
         inBackground = true;
@@ -43,6 +87,7 @@ public class AmazonSNS extends Extension {
 
     public void onResume(){
         inBackground = false;
+        submitNotificationTexts();
         getMessages();
     }
 

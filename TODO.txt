@@ -1,1 +1,2 @@
-* Agregar callback para recibir notificaciones
+* Recordar y enviar registration ID
+* Pasar sonido
