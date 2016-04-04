@@ -202,17 +202,14 @@ public class AmazonSNS extends Extension {
     public static String extrasToJson(Bundle extras){
         if(extras==null) return "";
         try{
-            JSONObject m = new JSONObject();
-            for(String key: extras.keySet()){
-                if(key.equals("registration_id")) {
-                    notifyRegistrationStatus(extras.getString(key));
-                    return "";
-                }
-                m.put(key, extras.getString(key));
+            if(extras.containsKey("registration_id") && extras.size()==1) {
+                notifyRegistrationStatus(extras.getString("registration_id"));
+                return "";
             }
-            String json = m.toString();
-            if(json.equals("{}")) return "";
-            return json;
+            if(!extras.containsKey("collapse_key")) return "";
+            JSONObject m = new JSONObject();
+            for(String key: extras.keySet()) m.put(key, extras.getString(key));
+            return m.toString();
         }catch(JSONException j){
             Log.i(LOG_PREFIX+"getMessages","JSON Exception: "+j.getMessage());
         }
