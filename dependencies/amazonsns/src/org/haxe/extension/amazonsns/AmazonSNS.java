@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import org.haxe.extension.Extension;
 import org.haxe.lime.HaxeObject;
+import org.json.*;
 
 public class AmazonSNS extends Extension {
 
@@ -25,6 +26,7 @@ public class AmazonSNS extends Extension {
     private static String multipleNotificationTitle = null;
     private static String singleNotificationMessage = null;
     private static String multipleNotificationMessage = null;
+    private static boolean notifiedRegistrationSuccess = false;
 
     public static void init(String senderID, HaxeObject callback) {
     	if (AmazonSNS.senderID != null) return;
@@ -68,8 +70,45 @@ public class AmazonSNS extends Extension {
         return true;
     }
 
-    private static void onMessage(String s){
-        callback.call1("_onMessage",s);
+    public static String getRegistrationId() {
+        if(MessageReceivingService.savedValues == null) return null;
+        return MessageReceivingService.savedValues.getString(mainContext.getString(R.string.registration_id),"");
+    }
+
+    public static String getRegistrationError() {
+        if(MessageReceivingService.savedValues == null) return null;
+        return MessageReceivingService.savedValues.getString(mainContext.getString(R.string.registration_error),"");
+    }
+
+    private static void notifyRegistrationStatus(final String registration_id){
+        if(notifiedRegistrationSuccess==true) return;
+        if(callback==null) return;
+        if(MessageReceivingService.savedValues == null) return;
+
+        mainActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                String token = registration_id;
+                if(token == null || token.equals("")) token = MessageReceivingService.savedValues.getString(mainContext.getString(R.string.registration_id),null);
+                if(token!=null) {
+                    notifiedRegistrationSuccess = true;
+                    callback.call1("_onRegistrationSuccess",token);
+                    return;
+                }
+                String error = MessageReceivingService.savedValues.getString(mainContext.getString(R.string.registration_error),null);
+                if(error !=null) {
+                    callback.call1("_onRegistrationError",error);
+                }
+            }
+        }); 
+    }
+
+    private static void onNotificationsReceived(final String json){
+        if(callback==null) return;
+        mainActivity.runOnUiThread(new Runnable() {
+            public void run() { 
+                callback.call1("_onNotificationsReceived",json);
+            }
+        });
     }
 
     private static void submitNotificationTexts(){
@@ -108,49 +147,70 @@ public class AmazonSNS extends Extension {
             return;
         }
 
-        String message = "";
-        String linesOfMessageLabel = mainActivity.getString(R.string.lines_of_message_count);
+        String messages = "";
+
         String numOfMissedMessagesLabel = mainActivity.getString(R.string.num_of_missed_messages);
         int numOfMissedMessages = MessageReceivingService.savedValues.getInt(numOfMissedMessagesLabel, 0);
-        int linesOfMessageCount = MessageReceivingService.savedValues.getInt(linesOfMessageLabel, 0);
 
-        Log.i(LOG_PREFIX+"getMessages","missed " + numOfMissedMessages + " message(s) / "+linesOfMessageCount+" line(s)");
+        Log.i(LOG_PREFIX+"getMessages","missed " + numOfMissedMessages + " message(s)");
 
-        if(numOfMissedMessages+linesOfMessageCount > 0){
+        if(numOfMissedMessages > 0){
 
             NotificationManager mNotification = (NotificationManager) mainActivity.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotification.cancel(R.string.notification_number);
 
             SharedPreferences.Editor editor = MessageReceivingService.savedValues.edit();
-            for(int i = 0; i < linesOfMessageCount; i++){
+            for(int i = 1; i <=numOfMissedMessages; i++){
                 String key = "MessageLine"+i;
-                message+= MessageReceivingService.savedValues.getString(key, "") + "\n";
+                String line = MessageReceivingService.savedValues.getString(key, "");
                 editor.remove(key);
+                if(line.equals("")) continue;
+                if(!messages.equals("")) messages+=",";
+                messages+=line;
             }
             editor.putInt(numOfMissedMessagesLabel, 0);
-            editor.putInt(linesOfMessageLabel, 0);
             editor.commit();
 
-        } else {
-            
-            Log.i(LOG_PREFIX+"getMessages","Seeking for intent messages...");
-            Intent intent = mainActivity.getIntent();
-            if(intent!=null){
-                Bundle extras = intent.getExtras();
-                if(extras!=null){
-                    for(String key: extras.keySet()){
-                        message+= key + "=" + extras.getString(key) + "\n";
-                    }
-                }
-            }
+        } 
 
+        Log.i(LOG_PREFIX+"getMessages","Seeking for intent messages...");
+        Intent intent = mainActivity.getIntent();
+        if(intent!=null){
+            Bundle extras = intent.getExtras();
+            String line = extrasToJson(extras);
+            if(!line.equals("")){
+                if(!messages.equals("")) messages+=",";
+                messages += line;
+            }
         }
 
-        if(message!=""){
-            onMessage(message);
-            Log.i(LOG_PREFIX+"getMessages","Message: "+message);
+        notifyRegistrationStatus(null);
+        if(!messages.equals("")){
+            String json = "["+messages+"]";
+            onNotificationsReceived(json);
+            Log.i(LOG_PREFIX+"getMessages","Message: "+json);
         }else{
             Log.i(LOG_PREFIX+"getMessages","No messages");
         }
+    }
+
+    public static String extrasToJson(Bundle extras){
+        if(extras==null) return "";
+        try{
+            JSONObject m = new JSONObject();
+            for(String key: extras.keySet()){
+                if(key.equals("registration_id")) {
+                    notifyRegistrationStatus(extras.getString(key));
+                    return "";
+                }
+                m.put(key, extras.getString(key));
+            }
+            String json = m.toString();
+            if(json.equals("{}")) return "";
+            return json;
+        }catch(JSONException j){
+            Log.i(LOG_PREFIX+"getMessages","JSON Exception: "+j.getMessage());
+        }
+        return "";
     }
 }

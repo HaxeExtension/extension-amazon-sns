@@ -3,8 +3,9 @@
     <string name="action_settings">Settings</string>
     <string name="first_launch">First Launch</string>
     <string name="num_of_missed_messages">MissedMessageCount</string>
-    <string name="lines_of_message_count">LinesOfMessageCount</string>
     <string name="preferences">PreferencesFile</string>
+    <string name="registration_id">RegistrationID</string>
+    <string name="registration_error">RegistrationError</string>
     <string name="notification_number">1337</string>
     <string name="app_package">::APP_PACKAGE::</string>
     <string name="app_title">::APP_TITLE::</string>

@@ -70,22 +70,15 @@ public class MessageReceivingService extends Service{
 
     protected static void saveToLog(Bundle extras, Context context){
         String numOfMissedMessagesLabel = context.getString(R.string.num_of_missed_messages);
-        String linesOfMessageLabel = context.getString(R.string.lines_of_message_count);
-        int numOfMissedMessages = savedValues.getInt(numOfMissedMessagesLabel, 0) + 1;
-        int linesOfMessageCount = savedValues.getInt(linesOfMessageLabel, 0);
+        int numOfMissedMessages = savedValues.getInt(numOfMissedMessagesLabel, 0)+1;
         Log.i(AmazonSNS.LOG_PREFIX, "Saving missed message number " + numOfMissedMessages);
-
+        String line = AmazonSNS.extrasToJson(extras);
+        
         SharedPreferences.Editor editor = savedValues.edit();
-        for(String key : extras.keySet()){
-            String line = String.format("%s=%s", key, extras.getString(key));
-            editor.putString("MessageLine" + linesOfMessageCount, line);
-            Log.i(AmazonSNS.LOG_PREFIX, "Saving String: " + "MessageLine" + linesOfMessageCount + " = " + line);
-            linesOfMessageCount++;
-        }
-
-        editor.putInt(linesOfMessageLabel, linesOfMessageCount);
+        editor.putString("MessageLine" + numOfMissedMessages, line);
         editor.putInt(numOfMissedMessagesLabel, numOfMissedMessages);
         editor.commit();
+
         Intent intent = createIntent();
         postNotification(intent, context, numOfMissedMessages);
     }
@@ -127,13 +120,19 @@ public class MessageReceivingService extends Service{
         new AsyncTask(){
             protected Object doInBackground(final Object... params) {
                 String token;
+                SharedPreferences.Editor editor = savedValues.edit();
                 try {
                     token = gcm.register(AmazonSNS.senderID);
-                    Log.i(AmazonSNS.LOG_PREFIX, "Registration ID = " + token);
+                    Log.i(AmazonSNS.LOG_PREFIX, "Registration ID: " + token);
+                    editor.putString(getString(R.string.registration_id), token);
+                    editor.remove(getString(R.string.registration_error));
                 } 
                 catch (IOException e) {
                     Log.i(AmazonSNS.LOG_PREFIX, "Registration Error: " + e.getMessage());
+                    editor.putString(getString(R.string.registration_error), e.getMessage());
+                    editor.remove(getString(R.string.registration_id));
                 }
+                editor.commit();
                 return true;
             }
         }.execute(null, null, null);

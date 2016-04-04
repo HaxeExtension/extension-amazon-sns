@@ -30,25 +30,26 @@ class Main extends Sprite {
 		super ();
 
 		trace("Setting callback functions");
-		AmazonSNS.onNotificationReceived = onNotificationReceived;
-		AmazonSNS.onRegistrationComplete = onRegistrationComplete;
+		AmazonSNS.onNotificationsReceived = onNotificationsReceived;
+		AmazonSNS.onRegistrationSuccess = onRegistrationSuccess;
+		// AmazonSNS.onRegistrationError = onRegistrationErrror; // (optional)
 		AmazonSNS.onLoadComplete = onLoadComplete;
 
 		trace("About to init AmazonSNS for Google Cloud Messages");
 		AmazonSNS.initGCM('YOUR-GOOGLE-SENDER-ID');
 	}
 
-	public function onLoadComplete(){
-		trace("Amazon SNS LOADED!");
+	public function onNotificationsReceived(json:String){
+		trace("New Notifications> " + json);
 	}
 
-	public function onNotificationReceived(message:String){
-		trace("New Notification!");
-		trace(message);
-	}
-
-	public function onRegistrationComplete(registrationID:String){
-		trace("Registration ID: " + registrationID);
+	// If registration is successful, you should use registrationID to send notifications
+	// to this device. Most probably you'll need to send the ID to your server APP
+	// (which of course is not included on this extension and you need to do it all by yourself)
+	public function onRegistrationSuccess(registrationID:String){
+		trace("Registration success: "+registrationID);
+		// you can also call AmazonSNS.getRegistrationId(); to get registrationID at any time.
+		// you can also call AmazonSNS.getRegistrationError(); to get registrationErrors at any time.
 	}
 	
 }
