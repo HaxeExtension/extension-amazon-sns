@@ -182,7 +182,7 @@ public class AmazonSNS extends Extension {
         Intent intent = mainActivity.getIntent();
         if(intent!=null){
             Bundle extras = intent.getExtras();
-            String line = extrasToJson(extras);
+            String line = extrasToJson(extras, true);
             if(!line.equals("")){
                 if(!messages.equals("")) messages+=",";
                 messages += line;
@@ -199,7 +199,7 @@ public class AmazonSNS extends Extension {
         }
     }
 
-    public static String extrasToJson(Bundle extras){
+    public static String extrasToJson(Bundle extras, boolean justArrived){
         if(extras==null) return "";
         try{
             if(extras.containsKey("registration_id") && extras.size()==1) {
@@ -209,6 +209,7 @@ public class AmazonSNS extends Extension {
             if(!extras.containsKey("collapse_key")) return "";
             JSONObject m = new JSONObject();
             for(String key: extras.keySet()) m.put(key, extras.getString(key));
+            m.put("justArrived",(justArrived)?"true":"false");
             return m.toString();
         }catch(JSONException j){
             Log.i(LOG_PREFIX+"getMessages","JSON Exception: "+j.getMessage());

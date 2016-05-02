@@ -72,7 +72,7 @@ public class MessageReceivingService extends Service{
         String numOfMissedMessagesLabel = context.getString(R.string.num_of_missed_messages);
         int numOfMissedMessages = savedValues.getInt(numOfMissedMessagesLabel, 0)+1;
         Log.i(AmazonSNS.LOG_PREFIX, "Saving missed message number " + numOfMissedMessages);
-        String line = AmazonSNS.extrasToJson(extras);
+        String line = AmazonSNS.extrasToJson(extras, false);
         
         SharedPreferences.Editor editor = savedValues.edit();
         editor.putString("MessageLine" + numOfMissedMessages, line);

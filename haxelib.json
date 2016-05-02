@@ -9,6 +9,6 @@
 		"extension-android-support-v4": "",
 		"extension-googleplayservices-lib": ""
 	},
-	"version": "0.1.0",
-	"releasenote": "First working release!"
+	"version": "0.1.1",
+	"releasenote": "Add justArrived parameter to Notification JSON objects!"
 }
