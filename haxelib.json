@@ -7,8 +7,8 @@
 	"description": "OpenFL/NME extension for Amazon SNS (push notifications service).",
 	"dependencies": {
 		"extension-android-support-v4": "",
-		"extension-googleplayservices-lib": ""
+		"extension-googleplayservices-basement": ""
 	},
-	"version": "0.1.1",
-	"releasenote": "Add justArrived parameter to Notification JSON objects!"
+	"version": "0.1.2",
+	"releasenote": "Swtich to extension-googleplayservices-basement"
 }
