@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	<section if="android">
-		<set name="google-play-services-gcm" /> 
-		<set name="google-play-services-iid" /> 
-		<haxelib name="extension-googleplayservices-basement" />
-		<haxelib name="extension-android-support-v4" />
+		<set name="googleCloudMessaging" />
+		<set name="supportV4" />
+		<haxelib name="google-play-services" />
 		<dependency name="amazonsns" path="dependencies/amazonsns" /> 
 		<android extension="org.haxe.extension.amazonsns.AmazonSNS" />
 	</section>
