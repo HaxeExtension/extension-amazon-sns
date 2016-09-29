@@ -7,8 +7,9 @@
 	"description": "OpenFL/NME extension for Amazon SNS (push notifications service).",
 	"dependencies": {
 		"extension-android-support-v4": "",
-		"extension-googleplayservices-basement": ""
+		"extension-googleplayservices-basement": "",
+		"google-play-services": ""
 	},
-	"version": "0.1.2",
-	"releasenote": "Swtich to extension-googleplayservices-basement"
+	"version": "0.1.3",
+	"releasenote": "Add Gradle Support"
 }
