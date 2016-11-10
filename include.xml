@@ -2,9 +2,8 @@
 <extension>
 	<section if="android">
 		<section unless="openfl-legacy || openfl-next">
-			<set name="googleCloudMessaging" />
-			<set name="supportV4" />
-			<haxelib name="google-play-services" />
+			<set name="playServicesVersion" value="+" unless="playServicesVersion" />
+			<set name="supportLibraryVersion" value="+" unless="supportLibraryVersion" />
 		</section>
 
 		<section if="openfl-legacy || openfl-next">
