@@ -86,8 +86,8 @@ public class MessageReceivingService extends Service{
     private static void loadNotificationIcons(Context context){
         if(notificationIconID != 0) return;
  
-        notificationIconID = context.getResources().getIdentifier("notification-icon", "drawable", packageName);
-        multiNotificationIconID = context.getResources().getIdentifier("multi-notification-icon", "drawable", packageName);
+        notificationIconID = context.getResources().getIdentifier("notification_icon", "drawable", packageName);
+        multiNotificationIconID = context.getResources().getIdentifier("multi_notification_icon", "drawable", packageName);
 
         if(notificationIconID == 0) notificationIconID = context.getResources().getIdentifier("icon", "drawable", packageName);
         if(multiNotificationIconID == 0) multiNotificationIconID = notificationIconID;        

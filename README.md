@@ -75,7 +75,7 @@ Example:
 	AmazonSNS.setNotificationMessage("Click here to see it!","Click here to see %% messages...");
 ```
 
-To customize icons (ON ANDROID), you need to add them to the app resources so that they end up on the following folders: res/drawable-XXXX/notification-icon.png and res/drawable-XXXX/multi-notification-icon.png.
+To customize icons (ON ANDROID), you need to add them to the app resources so that they end up on the following folders: res/drawable-XXXX/notification_icon.png and res/drawable-XXXX/multi_notification_icon.png.
 If those resources are not available for some resolution or missing at all, the extension will use the icon under res/drawable-XXXX/icon.png (wich is the openfl default location).
 
 
