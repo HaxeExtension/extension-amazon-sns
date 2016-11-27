@@ -1,6 +1,7 @@
 package extension.amazonsns;
 
 import openfl.Lib;
+import haxe.Timer;
 
 class AmazonSNS {
 	private static var instance:AmazonSNS = null;
@@ -41,7 +42,7 @@ class AmazonSNS {
 
 	public function _onNotificationsReceived(json:String){
 		if(onNotificationsReceived!=null) {
-			onNotificationsReceived(json);
+			Timer.delay(function(){ onNotificationsReceived(json); }, 0);
 		} else {
 			trace("Notification received: "+json);
 		}		
@@ -49,7 +50,7 @@ class AmazonSNS {
 
 	public function _onRegistrationSuccess(registrationID:String) {
 		if(onRegistrationSuccess!=null) {
-			onRegistrationSuccess(registrationID);
+			Timer.delay(function(){ onRegistrationSuccess(registrationID); }, 0);
 		} else {
 			trace("Registration success: "+registrationID);
 		}
@@ -57,7 +58,7 @@ class AmazonSNS {
 
 	public function _onRegistrationError(errorMessage:String) {
 		if(onRegistrationError!=null) {
-			onRegistrationError(errorMessage);
+			Timer.delay(function(){ onRegistrationError(errorMessage); }, 0);
 		} else {
 			trace("Registration error: "+errorMessage);
 		}

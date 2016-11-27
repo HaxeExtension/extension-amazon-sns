@@ -9,6 +9,6 @@
 		"extension-android-support-v4": "",
 		"extension-googleplayservices-basement": ""
 	},
-	"version": "0.1.5",
-	"releasenote": "Fix notification icon file name."
+	"version": "0.1.6",
+	"releasenote": "Run callbacks delayed and force them to main thread to avoid race conditions"
 }
