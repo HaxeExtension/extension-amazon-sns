@@ -9,6 +9,6 @@
 		"extension-android-support-v4": "",
 		"extension-googleplayservices-basement": ""
 	},
-	"version": "0.1.6",
-	"releasenote": "Run callbacks delayed and force them to main thread to avoid race conditions"
+	"version": "0.1.7",
+	"releasenote": "Add warning if you forgot to set google play services version."
 }
