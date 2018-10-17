@@ -2,6 +2,12 @@ package extension.amazonsns;
 
 import openfl.Lib;
 import haxe.Timer;
+#if (openfl < "4.0.0")
+import openfl.utils.JNI;
+#else
+import lime.system.JNI;
+#end
+
 
 class AmazonSNS {
 	private static var instance:AmazonSNS = null;
@@ -24,12 +30,12 @@ class AmazonSNS {
 		try{
 			instance = new AmazonSNS();
 			// JNI METHOD LINKING
-			var __init:String->AmazonSNS->Void = openfl.utils.JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "init", "(Ljava/lang/String;Lorg/haxe/lime/HaxeObject;)V");
-			setNotificationTitle = openfl.utils.JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "setNotificationTitles", "(Ljava/lang/String;Ljava/lang/String;)Z");
-			setNotificationMessage = openfl.utils.JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "setNotificationMessages", "(Ljava/lang/String;Ljava/lang/String;)Z");
-			getRegistrationId = openfl.utils.JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "getRegistrationId", "()Ljava/lang/String;");
-			getRegistrationError = openfl.utils.JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "getRegistrationError", "()Ljava/lang/String;");
-			registerRetry = openfl.utils.JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "registerRetry", "()V");
+			var __init:String->AmazonSNS->Void = JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "init", "(Ljava/lang/String;Lorg/haxe/lime/HaxeObject;)V");
+			setNotificationTitle = JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "setNotificationTitles", "(Ljava/lang/String;Ljava/lang/String;)Z");
+			setNotificationMessage = JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "setNotificationMessages", "(Ljava/lang/String;Ljava/lang/String;)Z");
+			getRegistrationId = JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "getRegistrationId", "()Ljava/lang/String;");
+			getRegistrationError = JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "getRegistrationError", "()Ljava/lang/String;");
+			registerRetry = JNI.createStaticMethod("org/haxe/extension/amazonsns/AmazonSNS", "registerRetry", "()V");
 			__init(senderID, instance);
 		}catch(e:Dynamic){
 			trace("Android INIT Exception: "+e);
