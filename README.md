@@ -1,9 +1,9 @@
-#extension-amazon-sns
+# extension-amazon-sns
 
 OpenFL/NME extension for Amazon SNS (push notifications service).
 This extension allows you to easily integrate AmazonSNS your OpenFL or NME game / application.
 
-###Main Features
+### Main Features
 Amazon SNS offers push notification services through multiple platforms. This means you need to create accounts and get ID for each platform you want to use this extension.
 For example: To get notifications on Android devices using Google services, you need a google cloud message enabled app and the corresponding APIs configured.
 
@@ -14,7 +14,7 @@ This extension supports the following service carries:
 * Baidu Push Notifications (for china) - Comming soon.
 * Amazon Kindle Notifications - Comming soon.
 
-###Simple use Example
+### Simple use Example
 Using this extension is quite simple:
 You just call init once and you'll start receiving notifications :)
 
@@ -59,7 +59,8 @@ class Main extends Sprite {
 	
 }
 ```
-###Customize notifications text and icon
+
+### Customize notifications text and icon
 By default, the extension uses:
 1) Your app name as title.
 2) Your app icon as icon.
@@ -79,7 +80,7 @@ To customize icons (ON ANDROID), you need to add them to the app resources so th
 If those resources are not available for some resolution or missing at all, the extension will use the icon under res/drawable-XXXX/icon.png (wich is the openfl default location).
 
 
-###How to Install
+### How to Install
 
 To install this library, you can simply get the library from haxelib like this:
 ```bash
@@ -91,12 +92,12 @@ Once this is done, you just need to add this to your project.xml
 <haxelib name="extension-amazon-sns" />
 ```
 
-###Disclaimer
+### Disclaimer
 
 Amazon is a registered trademark of Amazon Technologies, Inc.
 http://es.unibrander.com/estados-unidos/12554US/amazon.html
 
-###License
+### License
 
 The MIT License (MIT) - [LICENSE.md](LICENSE.md)
 
